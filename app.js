@@ -1,9 +1,11 @@
 const inquirer = require("inquirer");
 const createTemplates = require("./generateHtml")
 const createManager = createTemplates.createManager
+const createEngineer = createTemplates.createEngineer
+const createIntern = createTemplates.createIntern
 const renderMain = createTemplates.renderMain
 
-function askManagerQuestions(){
+function askManagerQuestions() {
     inquirer
         .prompt([
             {
@@ -43,38 +45,37 @@ function askManagerQuestions(){
                 }
             }
         ])
-        .then(function( {name, id, email, officeNumber}){
-            console.log({name, id, email, officeNumber})
+        .then(function ({ name, id, email, officeNumber }) {
             createManager(name, id, email, officeNumber)
             askNextMember()
         })
 }
 
-function askNextMember(){
+function askNextMember() {
     inquirer
-    .prompt([
-        {
-           type: "list",
-           message: "Select the next team member to add.",
-           name: "choice",
-           choices: ["Engineer", "Intern", "Don't add anybody else."]
-        }
-        
-    ])
-    .then(function ({ choice }){
-        if (choice === "Engineer"){
-            askEngineerQuestions()
-        }
-        else if(choice === "Intern"){
-            askInternQuestions()
-        }
-        else if(choice === "Don't add anybody else."){
-            renderMain
-        }
-    })
+        .prompt([
+            {
+                type: "list",
+                message: "Select the next team member to add.",
+                name: "choice",
+                choices: ["Engineer", "Intern", "Don't add anybody else."]
+            }
+
+        ])
+        .then(function ({ choice }) {
+            if (choice === "Engineer") {
+                askEngineerQuestions()
+            }
+            else if (choice === "Intern") {
+                askInternQuestions()
+            }
+            else if (choice === "Don't add anybody else.") {
+                renderMain()
+            }
+        })
 }
 
-function askEngineerQuestions(){
+function askEngineerQuestions() {
     inquirer
         .prompt([
             {
@@ -108,23 +109,17 @@ function askEngineerQuestions(){
                 type: "input",
                 message: "Enter the engineer's github.",
                 name: "github",
-                validate: function validURL(github) {
-                    var pattern = new RegExp('^(https?:\\/\\/)?'+ // protocol
-                      '((([a-z\\d]([a-z\\d-]*[a-z\\d])*)\\.)+[a-z]{2,}|'+ // domain name
-                      '((\\d{1,3}\\.){3}\\d{1,3}))'+ // OR ip (v4) address
-                      '(\\:\\d+)?(\\/[-a-z\\d%_.~+]*)*'+ // port and path
-                      '(\\?[;&a-z\\d%_.~+=-]*)?'+ // query string
-                      '(\\#[-a-z\\d_]*)?$','i'); // fragment locator
-                    return !!pattern.test(github);
-                  }
+                validate: function validateGithub(github) {
+                    return github !== '';
+                }
             }
         ])
-        .then(function(answers){
-            console.log(answers)
+        .then(function ({ name, id, email, github }) {
+            createEngineer(name, id, email, github)
             askNextMember()
         })
 }
-function askInternQuestions(){
+function askInternQuestions() {
     inquirer
         .prompt([
             {
@@ -163,8 +158,8 @@ function askInternQuestions(){
                 }
             }
         ])
-        .then(function(answers){
-            console.log(answers)
+        .then(function ({name, id, email, school}) {
+            createIntern(name, id, email, school)
             askNextMember()
         })
 }

@@ -1,7 +1,6 @@
 const fs = require('fs');
-const templatesDir = "./templates";
+const templatesDir = "./templates/";
 const path = require('path')
-const outputDir = "./output"
 const employeeCreator = require("./lib/employee");
 const Manager = require("./lib/manager");
 const Engineer = require("./lib/engineer");
@@ -9,59 +8,68 @@ const Intern = require("./lib/intern");
 
 let team = "";
 
-function replacePlaceholders(template, placeholder, replacement)
-{
-    var regex = new RegExp("{{ "+placeholder+" }}", "g")
-        var template = template.replace(regex, replacement);
-        return template
-
-}
-
-
 const renderEngineer = engineer => {
     let template = fs.readFileSync(path.resolve(templatesDir, "engineer.html"), "utf8");
-    template = replacePlaceholders(template, "name", engineer.getName());
-    template = replacePlaceholders(template, "role", engineer.getRole());
-    template = replacePlaceholders(template, "email", engineer.getEmail());
-    template = replacePlaceholders(template, "id", engineer.getId());
-    template = replacePlaceholders(template, "github", engineer.getGithub());
-    return team + template;
+    var engineerHtml = ""
+    engineerHtml = engineerHtml + template.replace(/{{ name }}/g, engineer.getName())
+    .replace(/{{ role }}/g, engineer.getRole())
+    .replace(/{{ email }}/g, engineer.getEmail())
+    .replace(/{{ id }}/g, engineer.getId())
+    .replace(/{{ github }}/g, engineer.getGithub())
+    team = team + engineerHtml;
   };
 
   const renderIntern = intern => {
     let template = fs.readFileSync(path.resolve(templatesDir, "intern.html"), "utf8");
-    template = replacePlaceholders(template, "name", intern.getName());
-    template = replacePlaceholders(template, "role", intern.getRole());
-    template = replacePlaceholders(template, "email", intern.getEmail());
-    template = replacePlaceholders(template, "id", intern.getId());
-    template = replacePlaceholders(template, "github", intern.getGithub());
-    return team + template;
+    var internHtml = ""
+    internHtml = internHtml + template.replace(/{{ name }}/g, intern.getName())
+    .replace(/{{ role }}/g, intern.getRole())
+    .replace(/{{ email }}/g, intern.getEmail())
+    .replace(/{{ id }}/g, intern.getId())
+    .replace(/{{ school }}/g, intern.getSchool())
+    team = team + internHtml;
   };
+
 
   const renderManager = manager => {
     let template = fs.readFileSync(path.resolve(templatesDir, "manager.html"), "utf8");
-    template = replacePlaceholders(template, "name", manager.getName());
-    template = replacePlaceholders(template, "role", manager.getRole());
-    template = replacePlaceholders(template, "email", manager.getEmail());
-    template = replacePlaceholders(template, "id", manager.getId());
-    template = replacePlaceholders(template, "github", manager.getGithub());
-    return team + template;
+    var managerHtml = ""
+    managerHtml = managerHtml + template.replace(/{{ name }}/g, manager.getName())
+                           .replace(/{{ role }}/g, manager.getRole())
+                           .replace(/{{ email }}/g, manager.getEmail())
+                           .replace(/{{ id }}/g, manager.getId())
+                           .replace(/{{ officeNumber }}/g, manager.getOfficeNumber())
+    console.log(managerHtml)
+    team = team + managerHtml;
   };
 
 function createManager(name, id, email, officeNumber){
     const manager = new Manager(name, id, email, officeNumber)
-    console.log("manager: ", manager)
     renderManager(manager)
 }
 
-const renderMain = team =>{
+function createEngineer(name, id, email, github){
+    const engineer = new Engineer(name, id, email, github)
+    renderEngineer(engineer)
+}
+
+function createIntern(name, id, email, school){
+    const intern = new Intern(name, id, email, school)
+    renderIntern(intern)
+}
+
+function renderMain(){
     let masterTemplate = fs.readFileSync(path.resolve(templatesDir, "main.html"), "utf8")
-    masterTemplate = replacePlaceholders(masterTemplate, "team", team);
+    var masterHtml =""
+    masterHtml = masterHtml + masterTemplate.replace(/{{ team }}/g, team)
     let file = path.join(__dirname, 'output', "/index.html");
-    fs.writeFileSync(file, masterTemplate);
+    console.log(file);
+    fs.writeFileSync(file, masterHtml);
 }
 
   module.exports = {
       createManager: createManager,
+      createEngineer: createEngineer,
+      createIntern: createIntern,
       renderMain: renderMain
   }
